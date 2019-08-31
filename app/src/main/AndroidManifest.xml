@@ -11,7 +11,7 @@
             android:value="true" />
         <meta-data
         android:name="xposeddescription"
-        android:value="去除魅族通知栏白边" />
+        android:value="去除MIUI魅族通知栏白边" />
         <meta-data
         android:name="xposedminversion"
         android:value="82" />
