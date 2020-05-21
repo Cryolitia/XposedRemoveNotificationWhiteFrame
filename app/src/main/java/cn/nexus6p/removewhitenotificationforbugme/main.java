@@ -1,14 +1,11 @@
 package cn.nexus6p.removewhitenotificationforbugme;
 
-import android.app.Application;
-import android.content.Context;
 import android.content.res.Resources;
 
 import java.util.ArrayList;
 
 import de.robv.android.xposed.IXposedHookInitPackageResources;
 import de.robv.android.xposed.IXposedHookLoadPackage;
-import de.robv.android.xposed.IXposedHookZygoteInit;
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_InitPackageResources;
@@ -45,22 +42,18 @@ public class main implements IXposedHookInitPackageResources, IXposedHookLoadPac
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {
         if (!lpparam.packageName.equals("com.android.systemui")) return;
         final ClassLoader classLoader = lpparam.classLoader;
-        XposedHelpers.findAndHookMethod(Application.class.getName(), classLoader, "attach", Context.class, new XC_MethodHook() {
-            @Override
-            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                super.afterHookedMethod(param);
-                Context context = (Context) param.args[0];
-                final ArrayList<Integer> IDs = new ArrayList<>();
-                for (String nameString : nameStrings) {
-                    try {
-                        IDs.add(context.getResources().getIdentifier(nameString, "dimen", "com.android.systemui"));
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
+
                 XposedHelpers.findAndHookMethod(Resources.class, "getDimensionPixelSize", int.class, new XC_MethodHook() {
                     @Override
                     protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                        final ArrayList<Integer> IDs = new ArrayList<>();
+                        for (String nameString : nameStrings) {
+                            try {
+                                IDs.add(((Resources)param.thisObject).getIdentifier(nameString, "dimen", "com.android.systemui"));
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
                         int resID = (int) param.args[0];
                         for (Integer ID : IDs) {
                             if (resID == ID) {
@@ -69,8 +62,6 @@ public class main implements IXposedHookInitPackageResources, IXposedHookLoadPac
                             }
                         }
                     }
-                });
-            }
         });
     }
 }
