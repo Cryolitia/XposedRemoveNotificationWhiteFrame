@@ -24,6 +24,7 @@ public class main implements IXposedHookInitPackageResources, IXposedHookLoadPac
         nameStrings.add("notification_custom_view_corner_radius");
         nameStrings.add("notification_row_extra_padding");
         nameStrings.add("notification_custom_view_margin");
+        nameStrings.add("notification_stack_scroller_top_bottom_padding");
     }
 
     @Override
